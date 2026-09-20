@@ -327,9 +327,33 @@
             30%      { transform: scale(1); }
             45%      { transform: scale(1.06); }
         }
+
+        /* ===== ปุ่มเปิด/ปิดเพลง (มุมขวาบน) ===== */
+        #music-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 18px;
+            background-color: #ff85a1;
+            box-shadow: 0 3px 0 #ff4d6d;
+            z-index: 1000;
+        }
+        #music-btn.off {
+            opacity: 0.45;
+        }
     </style>
 </head>
 <body>
+
+    <audio id="bgm" src="SomebodysPleasure.FLAC" loop preload="auto"></audio>
+    <button id="music-btn" onclick="toggleMusic()" aria-label="Play/Pause Music">♪</button>
 
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <defs>
@@ -370,16 +394,18 @@
     
     <script>
         const storyMessages = [
-            "ผมดูซีรีส์มาเยอะนะ\nแต่ไม่เชื่อเรื่องรักแรกพบเลย\n<span class='hint-text'>( Please click )</span>",
+            "ผมดูซีรีส์มาเยอะนะ\nแต่กลับไม่เชื่อเรื่องรักแรกพบเลย\n<span class='hint-text'>( Please click )</span>",
             "เพราะที่ผ่านมา\n<span class='hint-text'>( Please click )</span>",
             "รักไม่ค่อยจะยุ่ง\nมุ่งเเต่จะทํางานมาตลอด\n<span class='hint-text'>( Please click )</span>",
-            "จนมาวันนึงบังเอิญเจอคุณ\nหลายครั้งมากก\nเเบบ ก ล้านตัวเลยละ\n<span class='hint-text'>( Please click )</span>",
+            "จนมาวันนึง...\n<span class='hint-text'>( Please click )</span>",
+            "บังเอิญเจอคุณ\nหลายครั้งมากก\nเเบบ ก ล้านตัวเลยละ\n<span class='hint-text'>( Please click )</span>",
             "เลยใช้ความกล้าทั้งหมดในชีวิต\nเข้าไปคุย และขอไอจีกับคุณ\nเป็นครั้งเเรก\n<span class='hint-text'>( Please click )</span>",
-            "นี่เป็นเหตุผลที่ว่า...\nตอนนี้ผมเริ่มเชื่อคำนั้นขึ้นมาละ\n<span class='hint-text'>( Please click )</span>",
+            "นี่เป็นเหตุผลที่ว่า...\n<span class='hint-text'>( Please click )</span>",
+            "ผมเริ่มที่จะเชื่อคำนั้นขึ้นมาละ\n<span class='hint-text'>( Please click )</span>",
             "ก่อนอื่นเลย\n<span class='hint-text'>( Please click )</span>",
-            "ผมขอรับรองอย่างนึง\n<span class='hint-text'>( Please click )</span>",
+            "ผมขอรับรองก่อนอย่างนึง\n<span class='hint-text'>( Please click )</span>",
             "ถึงผมจะไม่ใช่หมอก็จริง\nแต่ขอรับรองว่า\n<span class='hint-text'>( Please click )</span>",
-            "ผมจะดูแลหัวใจคุณเป็นอย่างดี\nแน่นอนคับบ\n<span class='hint-text'>( Please click )</span>",
+            "จะดูแลหัวใจคุณเป็นอย่างดี\nแน่นอนคับบ\n<span class='hint-text'>( Please click )</span>",
             "เรามาลองคุยกันนะ"
         ];
         
@@ -432,11 +458,33 @@
         document.getElementById('letter-decor').innerHTML =
             makeBow('corner tl') + makeBow('corner tr');
 
+        function startMusic() {
+            const bgm = document.getElementById('bgm');
+            bgm.volume = 0.5;
+            const p = bgm.play();
+            if (p && p.catch) p.catch(() => {});
+            document.getElementById('music-btn').style.display = 'flex';
+        }
+
+        function toggleMusic() {
+            const bgm = document.getElementById('bgm');
+            const btn = document.getElementById('music-btn');
+            if (bgm.paused) {
+                const p = bgm.play();
+                if (p && p.catch) p.catch(() => {});
+                btn.classList.remove('off');
+            } else {
+                bgm.pause();
+                btn.classList.add('off');
+            }
+        }
+
         function openLetterFlow() {
             const wrapper = document.getElementById('envelope-wrapper');
 
          
             if (stage === 0) {
+                startMusic();
                 stage = -1;
                 wrapper.classList.add('open');
                 document.getElementById('tap-text').style.opacity = 0;
@@ -531,7 +579,7 @@
             setTimeout(() => {
                 letterText.style.transform = 'translateY(-10px)';
                 letterText.innerHTML = heartSVG +
-                    "<b>เย้! ดีใจที่สุดเลยยย\n<br><span style='font-size: 15px; font-weight: normal; color: #ff758f;'>ต่อไปนี้ผมจะดูเเลลหัวใจคุณ\nเป็นอย่างดีเลยคับบ!</span></b>";
+                    "<b>เย้! ดีใจที่สุดเลยยย\n<br><span style='font-size: 15px; font-weight: normal; color: #ff758f;'>ต่อไปนี้ผมจะดูแลหัวใจคุณ\nเป็นอย่างดีเลยคับบ!</span></b>";
                 letterText.style.opacity = 1;
                 document.getElementById('action-buttons').style.display = 'none';
                 createHearts();
